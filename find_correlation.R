@@ -5,6 +5,7 @@ library(caret)
 library(corrplot)
 
 train<- read_csv("./data/output/train_feature_corr.csv")
+#train<-read_csv("./data/input/train.csv")
 train<- sapply(train, as.numeric)
 macro <- read_csv("./data/output/macro_corr.csv")
 train.scale<- scale(train,center=TRUE,scale=TRUE);
@@ -12,6 +13,7 @@ train.scale<- scale(train,center=TRUE,scale=TRUE);
 corMatMy <- cor(train.scale)
 #visualize the matrix, clustering features by correlation index.
 high_corr <- findCorrelation(corMatMy,cutoff = 0.9,verbose = FALSE)
+corrpred <- names(train)[high_corr]
 train_re_corr <- train[,-high_corr]
 dim(train_re_corr)
 
@@ -100,6 +102,15 @@ vif_func<-function(in_frame,thresh=10,trace=T,...){
   }
   
 }
-dtrain<- read_csv("./data/input/train.csv")
+dtrain<- read_csv("./data/output/x_train_vif.csv")
 dtrain$id <- dtrain$timestamp <- dtrain$price_doc <- NULL
+macor_vif<- read_csv("./data/output/macro_vif.csv")
 col<- vif_func(in_frame=dtrain,thresh=5,trace=T)
+cat(paste(shQuote(col, type="cmd"), collapse=", "))
+col_vif = replace(col, col =="X16_29_male", "16_29_male")
+vars_vif_drop <-names(train) %in% col_vif
+train_vif_feature <-train[!vars_vif_drop]
+write_csv(train_vif_feature,"./data/output/train_vif_fetrain.csv")
+
+col_macro<- vif_func(in_frame=macro,thresh=5,trace=T)
+cat(paste(shQuote(col_macro, type="cmd"), collapse=", "))
