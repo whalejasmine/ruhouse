@@ -14,10 +14,10 @@ corMatMy <- cor(train.scale)
 #visualize the matrix, clustering features by correlation index.
 high_corr <- findCorrelation(corMatMy,cutoff = 0.9,verbose = FALSE)
 corrpred <- names(train)[high_corr]
-train_re_corr <- train[,-high_corr]
+train_re_corr <- train[,high_corr]
 dim(train_re_corr)
 
-write_csv(train_re_corr,"./data/output/train_feature_multicoliear.csv")
+write_csv(train_re_corr,"./data/output/train_corr_drop.csv")
 #macro
 macro.scale <-scale(macro,center = TRUE,scale = TRUE)
 corr_macro <- cor(macro.scale)
